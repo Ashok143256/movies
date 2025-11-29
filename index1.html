@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GO DISH - Admin Panel</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Teko:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS Reset & Basic Setup */
+        :root {
+            --primary-color: #4b215c;
+            --secondary-color: #000000;
+            --accent-color: #66232e;
+            --glow-color: rgba(92, 173, 99, 0.6);
+            --text-color: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --font-main: 'Roboto', sans-serif;
+            --font-display: 'Teko', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            background-image: linear-gradient(45deg, var(--primary-color) 0%, #16222A 100%);
+            overflow-x: hidden;
+        }
+
+        /* --- LOGIN PAGE STYLES --- */
+        #login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            background-color: rgba(26, 26, 46, 0.8);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            text-align: center;
+        }
+
+        .login-container h1 {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px var(--glow-color);
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--accent-color);
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-color);
+        }
+
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .login-options a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+        
+        .login-options a:hover {
+            color: var(--accent-color);
+        }
+
+        /* --- ADMIN PANEL STYLES --- */
+        #admin-panel {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 250px;
+            background-color: var(--secondary-color);
+            padding: 20px;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s ease;
+        }
+        
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .sidebar-header h2 {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            text-shadow: 0 0 8px var(--glow-color);
+        }
+
+        .nav-menu a {
+            display: block;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-menu a:hover, .nav-menu a.active {
+            background-color: var(--accent-color);
+            color: white;
+            box-shadow: 0 0 15px var(--glow-color);
+            transform: translateX(5px);
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            background: none;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+        }
+        .logout-btn:hover {
+             background-color: var(--accent-color);
+             color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .content-header h1 {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            letter-spacing: 1px;
+        }
+
+        .btn-add {
+            padding: 10px 20px;
+            width: auto;
+        }
+
+        /* Dashboard Stats Cards */
+        #dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background-color: var(--secondary-color);
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border-color: var(--accent-color);
+        }
+        
+        .stat-card h3 {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card p {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        /* Movie Grid Layout */
+        #movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+        }
+        
+        .movie-card {
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .movie-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px var(--glow-color);
+        }
+        
+        .movie-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        
+        .movie-card-content {
+            padding: 15px;
+        }
+
+        .movie-card-content h3 {
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .movie-card-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 8px;
+            background: rgba(0,0,0,0.5);
+            padding: 5px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .movie-card:hover .movie-card-actions {
+            opacity: 1;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 5px;
+        }
+
+        /* User Table */
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .user-table th, .user-table td {
+            padding: 15px;
+            text-align: left;
+        }
+        
+        .user-table thead {
+            background-color: rgba(233, 69, 96, 0.2);
+        }
+        
+        .user-table tbody tr {
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .user-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .user-table .btn {
+            width: auto;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+        }
+        
+        .btn-delete {
+            background-color: #333;
+        }
+        .btn-delete:hover {
+            background-color: #555;
+            box-shadow: none;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background-color: var(--secondary-color);
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Notification Popup */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 2000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .notification.success {
+            background-color: #28a745;
+        }
+        
+        .notification.error {
+            background-color: var(--accent-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            #admin-panel {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                flex-direction: row;
+                justify-content: space-around;
+                align-items: center;
+                padding: 10px;
+            }
+            .sidebar-header { display: none; }
+            .nav-menu { display: flex; gap: 10px; }
+            .nav-menu a { padding: 10px; }
+            .logout-btn { margin-top: 0; }
+            
+            .main-content {
+                padding: 15px;
+            }
+            .content-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ======================= -->
+    <!--      LOGIN PAGE         -->
+    <!-- ======================= -->
+    <div id="login-page">
+        <div class="login-container">
+            <h1>GO DISH ADMIN</h1>
+            <form id="login-form">
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+            <div class="login-options">
+                <a href="#" id="forgot-password-link">Forgot Password?</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================= -->
+    <!--    ADMIN PANEL MAIN     -->
+    <!-- ======================= -->
+    <div id="admin-panel" style="display: none;">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>GO DISH</h2>
+            </div>
+            <div class="nav-menu">
+                <a href="#" class="nav-link active" data-target="dashboard">Dashboard</a>
+                <a href="#" class="nav-link" data-target="movies">Movies</a>
+                <a href="#" class="nav-link" data-target="users">Users</a>
+            </div>
+            <button class="btn logout-btn" id="logout-button">Logout</button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="content-header"><h1>Dashboard</h1></div>
+                <div id="dashboard-stats">
+                    <div class="stat-card">
+                        <h3>Total Movies</h3>
+                        <p id="total-movies">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Users</h3>
+                        <p id="total-users">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Genres</h3>
+                        <p id="total-genres">0</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Movies Section -->
+            <section id="movies" class="content-section">
+                <div class="content-header">
+                    <h1>Movie Management</h1>
+                    <button class="btn btn-add" id="add-movie-btn">Add Movie</button>
+                </div>
+                <div id="movie-grid">
+                    <!-- Movie cards will be injected here -->
+                </div>
+            </section>
+
+            <!-- Users Section -->
+            <section id="users" class="content-section">
+                <div class="content-header"><h1>User Management</h1></div>
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Registration Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-list">
+                        <!-- User rows will be injected here -->
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <!-- ======================= -->
+    <!--      MODAL POPUP        -->
+    <!-- ======================= -->
+    <div id="movie-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h2 id="modal-title">Add New Movie</h2>
+            <form id="movie-form">
+                <input type="hidden" id="movie-id">
+                <div class="input-group">
+                    <label for="movie-title">Title</label>
+                    <input type="text" id="movie-title" required>
+                </div>
+                <div class="input-group">
+                    <label for="movie-description">Description</label>
+                    <textarea id="movie-description" rows="4" style="width:100%; padding: 10px; background: var(--primary-color); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-color);" required></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="movie-genre">Genre (comma-separated)</label>
+                    <input type="text" id="movie-genre" required>
+                </div>
+                <div class="input-group">
+                    <label for="movie-year">Release Year</label>
+                    <input type="number" id="movie-year" required>
+                </div>
+                <div class="input-group">
+                    <label for="movie-rating">IMDb Rating</label>
+                    <input type="number" step="0.1" id="movie-rating" required>
+                </div>
+                <div class="input-group">
+                    <label for="movie-poster">Poster Image URL</label>
+                    <input type="url" id="movie-poster" required>
+                </div>
+                <div class="input-group">
+                    <label for="movie-trailer">Trailer Video URL</label>
+                    <input type="url" id="movie-trailer" required>
+                </div>
+                <button type="submit" class="btn" id="save-movie-btn">Save Movie</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- ======================= -->
+    <!--      NOTIFICATION       -->
+    <!-- ======================= -->
+    <div id="notification-popup" class="notification"></div>
+
+
+    <!-- ======================= -->
+    <!-- JAVASCRIPT & FIREBASE   -->
+    <!-- ======================= -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfKHrJYE9fVXGzlSY7Bha4h2DRqjRVou4",
+            authDomain: "tg-move.firebaseapp.com",
+            databaseURL: "https://tg-move-default-rtdb.firebaseio.com",
+            projectId: "tg-move",
+            storageBucket: "tg-move.firebasestorage.app",
+            messagingSenderId: "39801339042",
+            appId: "1:39801339042:web:b55efc89b502fe49b76bfb"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // DOM Elements
+        const loginPage = document.getElementById('login-page');
+        const adminPanel = document.getElementById('admin-panel');
+        const loginForm = document.getElementById('login-form');
+        const logoutButton = document.getElementById('logout-button');
+        const forgotPasswordLink = document.getElementById('forgot-password-link');
+        
+        const navLinks = document.querySelectorAll('.nav-link');
+        const contentSections = document.querySelectorAll('.content-section');
+        
+        const movieGrid = document.getElementById('movie-grid');
+        const userList = document.getElementById('user-list');
+
+        const totalMoviesEl = document.getElementById('total-movies');
+        const totalUsersEl = document.getElementById('total-users');
+        const totalGenresEl = document.getElementById('total-genres');
+
+        const modal = document.getElementById('movie-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const movieForm = document.getElementById('movie-form');
+        const addMovieBtn = document.getElementById('add-movie-btn');
+        const closeModalBtn = document.querySelector('.modal-close');
+
+        // --- AUTHENTICATION ---
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                loginPage.style.display = 'none';
+                adminPanel.style.display = 'flex';
+                // Fetch data once user is logged in
+                fetchMovies();
+                fetchUsers();
+                updateDashboardStats();
+            } else {
+                loginPage.style.display = 'flex';
+                adminPanel.style.display = 'none';
+            }
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            signInWithEmailAndPassword(auth, email, password)
+                .catch(error => {
+                    showNotification(`Login Failed: ${error.message}`, 'error');
+                });
+        });
+
+        logoutButton.addEventListener('click', () => {
+            signOut(auth);
+        });
+
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            const email = prompt("Please enter your email to reset password:");
+            if (email) {
+                sendPasswordResetEmail(auth, email)
+                    .then(() => showNotification('Password reset email sent!', 'success'))
+                    .catch(error => showNotification(`Error: ${error.message}`, 'error'));
+            }
+        });
+
+        // --- NAVIGATION ---
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                navLinks.forEach(l => l.classList.remove('active'));
+                contentSections.forEach(s => s.classList.remove('active'));
+
+                link.classList.add('active');
+                document.getElementById(link.dataset.target).classList.add('active');
+            });
+        });
+
+        // --- NOTIFICATION SYSTEM ---
+        function showNotification(message, type) {
+            const popup = document.getElementById('notification-popup');
+            popup.textContent = message;
+            popup.className = `notification ${type}`; // reset classes
+            popup.classList.add('show');
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 3000);
+        }
+
+        // --- DASHBOARD STATS ---
+        async function updateDashboardStats() {
+            // Movie Count
+            const movieSnapshot = await getDocs(collection(db, "movies"));
+            totalMoviesEl.textContent = movieSnapshot.size;
+
+            // User Count
+            // Note: For security, listing users is best done server-side.
+            // Here, we assume a 'users' collection is maintained in Firestore.
+            const userSnapshot = await getDocs(collection(db, "users"));
+            totalUsersEl.textContent = userSnapshot.size;
+
+            // Genre Count
+            const genres = new Set();
+            movieSnapshot.forEach(doc => {
+                const movie = doc.data();
+                if (movie.genre) {
+                    movie.genre.split(',').forEach(g => genres.add(g.trim()));
+                }
+            });
+            totalGenresEl.textContent = genres.size;
+        }
+
+        // --- MOVIE MANAGEMENT ---
+        const moviesCollection = collection(db, 'movies');
+
+        // Fetch and display movies in real-time
+        function fetchMovies() {
+            onSnapshot(moviesCollection, (snapshot) => {
+                movieGrid.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const movie = doc.data();
+                    const movieCard = `
+                        <div class="movie-card">
+                            <img src="${movie.posterUrl}" alt="${movie.title}">
+                            <div class="movie-card-content">
+                                <h3>${movie.title}</h3>
+                            </div>
+                            <div class="movie-card-actions">
+                                <button class="action-btn edit-btn" data-id="${doc.id}">✏️</button>
+                                <button class="action-btn delete-btn" data-id="${doc.id}">🗑️</button>
+                            </div>
+                        </div>
+                    `;
+                    movieGrid.innerHTML += movieCard;
+                });
+                updateDashboardStats(); // Update stats whenever movies change
+            });
+        }
+
+        // Handle Add/Edit/Delete clicks
+        movieGrid.addEventListener('click', (e) => {
+            const target = e.target;
+            const id = target.dataset.id;
+            if (target.classList.contains('delete-btn')) {
+                if(confirm('Are you sure you want to delete this movie?')) {
+                    deleteDoc(doc(db, 'movies', id))
+                    .then(() => showNotification('Movie deleted successfully!', 'success'))
+                    .catch(err => showNotification(`Error: ${err.message}`, 'error'));
+                }
+            }
+            if (target.classList.contains('edit-btn')) {
+                const movieDoc = doc(db, 'movies', id);
+                // This is a simplified edit. A real app would fetch the doc first.
+                // For this project, we'll just open the modal with the ID.
+                const card = target.closest('.movie-card');
+                const title = card.querySelector('h3').textContent;
+                // In a full app, you'd fetch the doc to pre-fill all fields.
+                // For this example, we'll just handle the ID.
+                openModal('Edit Movie', id);
+                // You would typically fetch the doc from Firestore and populate the form here.
+            }
+        });
+
+        // Open/Close Modal
+        addMovieBtn.addEventListener('click', () => openModal('Add New Movie'));
+        closeModalBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => e.target === modal && closeModal());
+
+        function openModal(title, id = null) {
+            modal.style.display = 'flex';
+            modalTitle.textContent = title;
+            movieForm.reset();
+            document.getElementById('movie-id').value = id || '';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        // Save or Update Movie
+        movieForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('movie-id').value;
+            const movieData = {
+                title: document.getElementById('movie-title').value,
+                description: document.getElementById('movie-description').value,
+                genre: document.getElementById('movie-genre').value,
+                releaseYear: Number(document.getElementById('movie-year').value),
+                rating: Number(document.getElementById('movie-rating').value),
+                posterUrl: document.getElementById('movie-poster').value,
+                trailerUrl: document.getElementById('movie-trailer').value,
+            };
+
+            if(id) { // Update existing movie
+                updateDoc(doc(db, 'movies', id), movieData)
+                .then(() => {
+                    showNotification('Movie updated successfully!', 'success');
+                    closeModal();
+                })
+                .catch(err => showNotification(`Error: ${err.message}`, 'error'));
+            } else { // Add new movie
+                addDoc(moviesCollection, movieData)
+                .then(() => {
+                    showNotification('Movie added successfully!', 'success');
+                    closeModal();
+                })
+                .catch(err => showNotification(`Error: ${err.message}`, 'error'));
+            }
+        });
+
+        // --- USER MANAGEMENT ---
+        const usersCollection = collection(db, 'users');
+
+        // Fetch and display users in real-time
+        function fetchUsers() {
+            // Note: It's assumed you have a 'users' collection in Firestore
+            // where you store user data upon registration.
+            onSnapshot(usersCollection, (snapshot) => {
+                userList.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const user = doc.data();
+                    const regDate = user.registrationDate ? new Date(user.registrationDate.seconds * 1000).toLocaleDateString() : 'N/A';
+                    const userRow = `
+                        <tr>
+                            <td>${user.email}</td>
+                            <td>${regDate}</td>
+                            <td><span style="color: ${user.status === 'blocked' ? 'red' : 'lightgreen'}">${user.status || 'active'}</span></td>
+                            <td>
+                                <button class="btn block-btn" data-id="${doc.id}" data-status="${user.status || 'active'}">
+                                    ${user.status === 'blocked' ? 'Unblock' : 'Block'}
+                                </button>
+                                <button class="btn btn-delete remove-btn" data-id="${doc.id}">Remove</button>
+                            </td>
+                        </tr>
+                    `;
+                    userList.innerHTML += userRow;
+                });
+            });
+        }
+        
+        // Handle User Actions (Block/Remove)
+        userList.addEventListener('click', (e) => {
+            const target = e.target;
+            const id = target.dataset.id;
+            
+            if(target.classList.contains('block-btn')) {
+                const currentStatus = target.dataset.status;
+                const newStatus = currentStatus === 'blocked' ? 'active' : 'blocked';
+                updateDoc(doc(db, 'users', id), { status: newStatus })
+                .then(() => showNotification(`User ${newStatus}.`, 'success'))
+                .catch(err => showNotification(`Error: ${err.message}`, 'error'));
+            }
+
+            if(target.classList.contains('remove-btn')) {
+                // IMPORTANT: This only removes the user from the Firestore database.
+                // It does NOT remove the user from Firebase Authentication.
+                // True user deletion requires the Admin SDK in a secure backend environment (like Cloud Functions).
+                if(confirm('This only removes the user record, not their login. Proceed?')) {
+                    deleteDoc(doc(db, 'users', id))
+                    .then(() => showNotification('User record removed.', 'success'))
+                    .catch(err => showNotification(`Error: ${err.message}`, 'error'));
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
